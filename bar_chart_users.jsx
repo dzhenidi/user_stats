@@ -13,7 +13,11 @@ const getPercent = (value, total) => {
 };
 export const BarChartUsers = ({barChartData}) => {
   const bars = Object.keys(barChartData).map( (dataKey, i) => (
-    <Bar dataKey={dataKey} fill={FILLS[i]} />
+    <Bar
+      dataKey={dataKey}
+      fill={FILLS[i]}
+      maxBarSize={100}
+    />
   ));
   return (
     	<BarChart width={600} height={300} data={[barChartData]}

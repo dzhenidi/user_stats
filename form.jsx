@@ -71,28 +71,119 @@ export default class Form extends React.Component {
     });
   }
 
+  parseState(users) {
+    let stateStats = {};
+    users.map( user => {
+      switch (user.gender){
+        case "female":
+          if (stateStats[user.location.state]) {
+            stateStats[user.location.state]["female"]++;
+          } else {
+            stateStats[user.location.state] = {
+              total: 1,
+              female: 1,
+              male: 0
+            };
+          }
+          break;
+        case "male":
+          if (stateStats[user.location.state]) {
+            stateStats[user.location.state]["male"]++;
+          } else {
+            stateStats[user.location.state] = {
+              total: 1,
+              female: 0,
+              male: 1
+            };
+          }
+      }
+    });
+    return stateStats;
+  }
+
+  sortData(stateStats, category, total){
+    let stateStatsArr = [];
+    for (let state in stateStats) {
+      if (stateStats.hasOwnProperty(state)) {
+        stateStatsArr.push({
+          'key': state,
+          'value': stateStats[state][category]
+        });
+      }
+    }
+    stateStatsArr.sort((a, b) => {
+      return a.value - b.value;
+    });
+    let stateStatsTopTen = stateStatsArr.slice(0, 10).map( el => el.key);
+    let stateStatsSelection = {};
+    stateStatsTopTen.forEach( el => {
+      stateStatsSelection[el] = getPercent(stateStats[el][category], total);
+    });
+    return stateStatsSelection;
+  }
+
   parseData(input) {
     // let users = JSON.parse(input).results; //array made up of users
     let users = input.results; //array made up of users
+    let stateStats = this.parseState(users);
+    let genderCount = {female: 0, male: 0};
     let genderStats = {female: 0, male: 0};
     let firstNameStats = {"A-M": 0, "N-Z": 0};
+    let lastNameStats = {"A-M": 0, "N-Z": 0};
+    // let stateStats = {};
     let total = 0;
     users.map( user => {
-      genderStats[user.gender]++;
+      genderCount[user.gender]++;
       if (user.name.first[0].toLowerCase() < "n") {
         firstNameStats["A-M"]++;
       } else {
         firstNameStats["N-Z"]++;
       }
+      if (user.name.last[0].toLowerCase() < "n") {
+        lastNameStats["A-M"]++;
+      } else {
+        lastNameStats["N-Z"]++;
+      }
+      // if (stateStats[user.location.state]) {
+      //   stateStats[user.location.state]++;
+      // } else {
+      //   stateStats[user.location.state] = 1;
+      // }
       total ++;
     });
-    genderStats.female = getPercent(genderStats.female, total);
-    genderStats.male = getPercent(genderStats.male, total);
+    genderStats.female = getPercent(genderCount.female, total);
+    genderStats.male = getPercent(genderCount.male, total);
     firstNameStats["A-M"] = getPercent(firstNameStats["A-M"], total);
     firstNameStats["N-Z"] = getPercent(firstNameStats["N-Z"], total);
+    lastNameStats["A-M"] = getPercent(lastNameStats["A-M"], total);
+    lastNameStats["N-Z"] = getPercent(lastNameStats["N-Z"], total);
+    // let stateStatsArr = [];
+    // for (let state in stateStats) {
+    //   if (stateStats.hasOwnProperty(state)) {
+    //     stateStatsArr.push({
+    //       'key': state,
+    //       'value': stateStats[state]
+    //     });
+    //   }
+    // }
+    // stateStatsArr.sort((a, b) => {
+    //   return a.value - b.value;
+    // });
+    // let stateStatsTopTen = stateStatsArr.slice(0, 10).map( el => el.key);
+    // let stateStatsSelection = {};
+    // stateStatsTopTen.forEach( el => {
+    //   stateStatsSelection[el] = getPercent(stateStats[el], total);
+    // });
+    const stateStatsTotals = this.sortData(stateStats, "total", total);
+    const stateStatsMales = this.sortData(stateStats, "male", genderCount.male);
+    const stateStatsFemales = this.sortData(stateStats, "female", genderCount.female);
     return {
       genderStats,
-      firstNameStats
+      firstNameStats,
+      lastNameStats,
+      stateStatsTotals,
+      stateStatsMales,
+      stateStatsFemales
     };
   }
 
@@ -115,6 +206,10 @@ export default class Form extends React.Component {
         <div className="userGrid">
           <BarChartUsers barChartData={this.state.data.genderStats}/>
           <BarChartUsers barChartData={this.state.data.firstNameStats}/>
+          <BarChartUsers barChartData={this.state.data.lastNameStats}/>
+          <BarChartUsers barChartData={this.state.data.stateStatsTotals}/>
+          <BarChartUsers barChartData={this.state.data.stateStatsMales}/>
+          <BarChartUsers barChartData={this.state.data.stateStatsFemales}/>
         </div>
       </div>
     );
