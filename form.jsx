@@ -59,16 +59,33 @@ export default class Form extends React.Component {
   constructor(){
     super();
     this.state = {
-      data: this.parseData(INPUT),
+      data: null,
     };
     this.handleInput = this.handleInput.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
     this.parseData = this.parseData.bind(this);
+    this.processFile = this.processFile.bind(this);
   }
+
   handleInput(e){
-    let users = JSON.parse(e.target.value).results; //array made up of users
+    this.processFile(e.target.value);
+  }
+  processFile(file) {
+    let data = JSON.parse(file).results; //array made up of users
     this.setState({
-      users
+      data: this.parseData(data)
     });
+  }
+  handleUpload(e) {
+    let file = e.currentTarget.files[0];
+    let fileReader = new FileReader();
+    fileReader.onloadend = () => {
+      this.processFile(fileReader.result)
+    };
+
+    if (file) {
+      fileReader.readAsText(file);
+    }
   }
 
   parseState(users) {
@@ -122,9 +139,8 @@ export default class Form extends React.Component {
     return stateStatsSelection;
   }
 
-  parseData(input) {
+  parseData(users) {
     // let users = JSON.parse(input).results; //array made up of users
-    let users = input.results; //array made up of users
     let stateStats = this.parseState(users);
     let genderCount = {female: 0, male: 0};
     let genderStats = {female: 0, male: 0};
@@ -186,10 +202,29 @@ export default class Form extends React.Component {
       stateStatsFemales
     };
   }
-
+  charts() {
+    return (
+      <div className="charts">
+        <BarChartUsers barChartData={this.state.data.genderStats}/>
+        <BarChartUsers barChartData={this.state.data.firstNameStats}/>
+        <BarChartUsers barChartData={this.state.data.lastNameStats}/>
+        <BarChartUsers barChartData={this.state.data.stateStatsTotals}/>
+        <BarChartUsers barChartData={this.state.data.stateStatsMales}/>
+        <BarChartUsers barChartData={this.state.data.stateStatsFemales}/>
+      </div>
+    );
+  }
 
 
   render(){
+    // const charts = [
+    //   <BarChartUsers barChartData={this.state.data.genderStats}/>,
+    //   <BarChartUsers barChartData={this.state.data.firstNameStats}/>,
+    //   <BarChartUsers barChartData={this.state.data.lastNameStats}/>,
+    //   <BarChartUsers barChartData={this.state.data.stateStatsTotals}/>,
+    //   <BarChartUsers barChartData={this.state.data.stateStatsMales}/>,
+    //   <BarChartUsers barChartData={this.state.data.stateStatsFemales}/>
+    // ];
 
     return(
       <div>
@@ -202,14 +237,16 @@ export default class Form extends React.Component {
               onChange={this.handleInput}
               />
           </label>
+          <label>
+            Upload file here
+            <input
+              type="file"
+              onChange={this.handleUpload}
+            />
+          </label>
         </form>
-        <div className="userGrid">
-          <BarChartUsers barChartData={this.state.data.genderStats}/>
-          <BarChartUsers barChartData={this.state.data.firstNameStats}/>
-          <BarChartUsers barChartData={this.state.data.lastNameStats}/>
-          <BarChartUsers barChartData={this.state.data.stateStatsTotals}/>
-          <BarChartUsers barChartData={this.state.data.stateStatsMales}/>
-          <BarChartUsers barChartData={this.state.data.stateStatsFemales}/>
+        <div className="charts">
+          { this.state.data ? this.charts() : null }
         </div>
       </div>
     );
