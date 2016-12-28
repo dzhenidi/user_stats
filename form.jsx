@@ -67,7 +67,7 @@ export default class Form extends React.Component {
     this.processFile = this.processFile.bind(this);
   }
 
-  handleInput(e){
+  handleInput(e) {
     this.processFile(e.target.value);
   }
   processFile(file) {
@@ -86,6 +86,10 @@ export default class Form extends React.Component {
     if (file) {
       fileReader.readAsText(file);
     }
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
   }
 
   parseState(users) {
@@ -204,51 +208,69 @@ export default class Form extends React.Component {
   }
   charts() {
     return (
-      <div className="charts">
-        <BarChartUsers barChartData={this.state.data.genderStats}/>
-        <BarChartUsers barChartData={this.state.data.firstNameStats}/>
-        <BarChartUsers barChartData={this.state.data.lastNameStats}/>
-        <BarChartUsers barChartData={this.state.data.stateStatsTotals}/>
-        <BarChartUsers barChartData={this.state.data.stateStatsMales}/>
-        <BarChartUsers barChartData={this.state.data.stateStatsFemales}/>
-      </div>
+      <section className="charts">
+        <BarChartUsers
+          barChartData={this.state.data.genderStats}
+          title="Users by Gender"/>
+        <BarChartUsers
+          barChartData={this.state.data.firstNameStats}
+          title="Users by First Name Initial"/>
+        <BarChartUsers
+          barChartData={this.state.data.lastNameStats}
+          title="Users by Last Name Initial"/>
+        <BarChartUsers
+          barChartData={this.state.data.stateStatsTotals}
+          title="Users by State"/>
+        <BarChartUsers
+          barChartData={this.state.data.stateStatsMales}
+          title="Male Users by State"/>
+        <BarChartUsers
+          barChartData={this.state.data.stateStatsFemales}
+          title="Female Users by State"/>
+      </section>
     );
   }
 
 
   render(){
-    // const charts = [
-    //   <BarChartUsers barChartData={this.state.data.genderStats}/>,
-    //   <BarChartUsers barChartData={this.state.data.firstNameStats}/>,
-    //   <BarChartUsers barChartData={this.state.data.lastNameStats}/>,
-    //   <BarChartUsers barChartData={this.state.data.stateStatsTotals}/>,
-    //   <BarChartUsers barChartData={this.state.data.stateStatsMales}/>,
-    //   <BarChartUsers barChartData={this.state.data.stateStatsFemales}/>
-    // ];
-
     return(
-      <div>
-        <form className="">
-          <label>
-            Paste JSON data here
-            <input
-              type="text"
-              value={this.state.userData}
-              onChange={this.handleInput}
-              />
-          </label>
-          <label>
-            Upload file here
-            <input
-              type="file"
-              onChange={this.handleUpload}
-            />
-          </label>
+      <main>
+        <h1>Welcome to User Statistics</h1>
+        <form className="user-input">
+          <div className="input-fields group">
+            <div className="input-item">
+              <label>
+                Paste data:
+                <input
+                  type="text"
+                  className="paste"
+                  value={this.state.userData}
+                  onChange={this.handleInput}
+                  />
+              </label>
+            </div>
+
+            <div className="input-item">
+              <label>
+                Upload file:
+                <input
+                  type="file"
+                  className="upload"
+                  onChange={this.handleUpload}
+                  />
+              </label>
+            </div>
+          </div>
+          <input
+            className="submit"
+            type="submit"
+            onClick={this.handleSubmit}
+          />
         </form>
         <div className="charts">
           { this.state.data ? this.charts() : null }
         </div>
-      </div>
+      </main>
     );
   }
 }
