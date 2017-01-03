@@ -14,7 +14,7 @@ import {
 
 export const BarChartUsers = ({barChartData, title}) => {
   const total = Util.getUserCount(barChartData);
-  const bars = Object.keys(barChartData).map( (dataKey, i) => (
+  const bars = Object.keys(barChartData).slice(0, 10).map( (dataKey, i) => (
     <Bar
       key={i}
       dataKey={dataKey}

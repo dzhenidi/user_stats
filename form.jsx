@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChartUsers } from './bar_chart_users';
+import * as Util from './util';
 
 
 export default class Form extends React.Component {
@@ -55,7 +56,8 @@ export default class Form extends React.Component {
               male: 0
             };
           }
-          break;
+        break;
+
         case "male":
           if (stateStats[user.location.state]) {
             stateStats[user.location.state]["male"]++;
@@ -67,102 +69,132 @@ export default class Form extends React.Component {
               male: 1
             };
           }
+        break;
       }
     });
     return stateStats;
   }
 
-  sortData(stateStats, category, total){
-    let stateStatsArr = [];
-    for (let state in stateStats) {
-      if (stateStats.hasOwnProperty(state)) {
-        stateStatsArr.push({
-          'key': state,
-          'value': stateStats[state][category]
+// input: arg1: {state1: {total: 5, female: 3, male:2}, state2: {...}, ...},
+//        arg2: "total", "female", or "male"
+// output: in desc order by prop value
+  sortData(stats, category){
+    let statsArr = [];
+    for (let prop in stats) {
+      if (stats.hasOwnProperty(prop)) {
+        let val = category === undefined ? stats[prop] : stats[prop][category];
+        statsArr.push({
+          'key': prop,
+          'value': val
         });
       }
     }
-    stateStatsArr.sort((a, b) => {
+    statsArr.sort((a, b) => {
       return b.value - a.value;
     });
 
-    let stateStatsTopTen = stateStatsArr.slice(0, 10).map( el => el.key);
-    let stateStatsSelection = {};
-    stateStatsTopTen.forEach( el => {
-      // stateStatsSelection[el] = getPercent(stateStats[el][category], total);
-      stateStatsSelection[el] = stateStats[el][category];
+    // let statsSortedKeys = statsArr.slice(0, 10).map( el => el.key);
+    let statsSortedKeys = statsArr.map( el => el.key);
+    let statsSorted = {};
+    statsSortedKeys.forEach( prop => {
+      let val = category === undefined ? stats[prop] : stats[prop][category];
+      statsSorted[prop] = val;
     });
-    return stateStatsSelection;
+    return statsSorted;
+  }
+
+  updateGenderCount(stats, user) {
+    stats[user.gender]++;
+    return stats;
+  }
+
+  updateInitialsCount(stats, user, prop) {
+    if (user.name[prop][0].toLowerCase() < "n") {
+      stats["A-M"]++;
+    } else {
+      stats["N-Z"]++;
+    }
+    return stats;
+  }
+
+  getAge(dateString) {
+    let today = new Date();
+    let birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+  }
+
+  updateAgeCount(stats, user) {
+    const age = this.getAge(user.dob);
+    if (age <= 20) {
+      stats["0-20"]++;
+    } else if (age <= 40) {
+      stats["21-40"]++;
+    } else if (age <= 60) {
+      stats["41-60"]++;
+    } else if (age <= 80) {
+      stats["61-80"]++;
+    } else if (age <= 100) {
+      stats["81-100"]++;
+    } else {
+      stats["100+"]++;
+    }
+
+    return stats;
   }
 
   parseData(users) {
-    // let users = JSON.parse(input).results; //array made up of users
     let stateStats = this.parseState(users);
-    let genderCount = {female: 0, male: 0};
-    // let genderStats = {female: 0, male: 0};
+    let genderStats = {female: 0, male: 0};
     let firstNameStats = {"A-M": 0, "N-Z": 0};
     let lastNameStats = {"A-M": 0, "N-Z": 0};
-    // let stateStats = {};
-    let total = 0;
+    let ageStats = {"0-20": 0, "21-40": 0, "41-60": 0, "61-80": 0, "81-100": 0, "100+": 0};
+
     users.map( user => {
-      genderCount[user.gender]++;
-      if (user.name.first[0].toLowerCase() < "n") {
-        firstNameStats["A-M"]++;
-      } else {
-        firstNameStats["N-Z"]++;
-      }
-      if (user.name.last[0].toLowerCase() < "n") {
-        lastNameStats["A-M"]++;
-      } else {
-        lastNameStats["N-Z"]++;
-      }
-      // if (stateStats[user.location.state]) {
-      //   stateStats[user.location.state]++;
+      genderStats = this.updateGenderCount(genderStats, user);
+      // genderStats[user.gender]++;
+      firstNameStats = this.updateInitialsCount(firstNameStats, user, "first");
+      // if (user.name.first[0].toLowerCase() < "n") {
+      //   firstNameStats["A-M"]++;
       // } else {
-      //   stateStats[user.location.state] = 1;
+      //   firstNameStats["N-Z"]++;
       // }
-      total ++;
+      lastNameStats = this.updateInitialsCount(lastNameStats, user, "last");
+      // if (user.name.last[0].toLowerCase() < "n") {
+      //   lastNameStats["A-M"]++;
+      // } else {
+      //   lastNameStats["N-Z"]++;
+      // }
+      ageStats = this.updateAgeCount(ageStats, user);
     });
-    // genderStats.female = getPercent(genderCount.female, total);
-    // genderStats.male = getPercent(genderCount.male, total);
-    // firstNameStats["A-M"] = getPercent(firstNameStats["A-M"], total);
-    // firstNameStats["N-Z"] = getPercent(firstNameStats["N-Z"], total);
-    // lastNameStats["A-M"] = getPercent(lastNameStats["A-M"], total);
-    // lastNameStats["N-Z"] = getPercent(lastNameStats["N-Z"], total);
-    // let stateStatsArr = [];
-    // for (let state in stateStats) {
-    //   if (stateStats.hasOwnProperty(state)) {
-    //     stateStatsArr.push({
-    //       'key': state,
-    //       'value': stateStats[state]
-    //     });
-    //   }
-    // }
-    // stateStatsArr.sort((a, b) => {
-    //   return a.value - b.value;
-    // });
-    // let stateStatsTopTen = stateStatsArr.slice(0, 10).map( el => el.key);
-    // let stateStatsSelection = {};
-    // stateStatsTopTen.forEach( el => {
-    //   stateStatsSelection[el] = getPercent(stateStats[el], total);
-    // });
-    const stateStatsTotals = this.sortData(stateStats, "total", total);
-    const stateStatsMales = this.sortData(stateStats, "male", genderCount.male);
-    const stateStatsFemales = this.sortData(stateStats, "female", genderCount.female);
+
+    ageStats = this.sortData(ageStats);
+    const stateStatsTotals = this.sortData(stateStats, "total");
+    const stateStatsMales = this.sortData(stateStats, "male");
+    const stateStatsFemales = this.sortData(stateStats, "female");
     return {
-      genderCount,
+      genderStats,
       firstNameStats,
       lastNameStats,
       stateStatsTotals,
       stateStatsMales,
-      stateStatsFemales
+      stateStatsFemales,
+      ageStats
     };
   }
+
   charts() {
     return (
       <section className="charts">
         <BarChartUsers
-          barChartData={this.state.data.genderCount}
+          barChartData={this.state.data.ageStats}
+          title="Users by Age"/>
+        <BarChartUsers
+          barChartData={this.state.data.genderStats}
           title="Users by Gender"/>
         <BarChartUsers
           barChartData={this.state.data.firstNameStats}
@@ -179,6 +211,7 @@ export default class Form extends React.Component {
         <BarChartUsers
           barChartData={this.state.data.stateStatsFemales}
           title="Female Users by State"/>
+
       </section>
     );
   }
