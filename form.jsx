@@ -1,5 +1,7 @@
 import React from 'react';
 import { BarChartUsers } from './bar_chart_users';
+import { BarChartStacked } from './bar_chart_stacked';
+import { PieChartUsers } from './pie_chart_users';
 import * as Util from './util';
 
 
@@ -8,10 +10,11 @@ export default class Form extends React.Component {
     super();
     this.state = {
       data: null,
+      showCharts: false
     };
+
     this.handleInput = this.handleInput.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
-    this.parseData = this.parseData.bind(this);
   }
 
   handleInput(e) {
@@ -31,7 +34,7 @@ export default class Form extends React.Component {
   }
 
   processFile(file) {
-    let data = JSON.parse(file).results; //array made up of users
+    let data = JSON.parse(file).results;
     this.setState({
       data: this.parseData(data)
     });
@@ -39,12 +42,19 @@ export default class Form extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
+
+  }
+
+  handleCancel(e) {
+    e.preventDefault();
+
   }
 
   parseState(users) {
     let stateStats = {};
+
     users.map( user => {
-      switch (user.gender){
+      switch (user.gender) {
         case "female":
           if (stateStats[user.location.state]) {
             stateStats[user.location.state]["female"]++;
@@ -75,36 +85,13 @@ export default class Form extends React.Component {
     return stateStats;
   }
 
-// input: arg1: {state1: {total: 5, female: 3, male:2}, state2: {...}, ...},
-//        arg2: "total", "female", or "male"
-// output: in desc order by prop value
-  sortData(stats, category){
-    let statsArr = [];
-    for (let prop in stats) {
-      if (stats.hasOwnProperty(prop)) {
-        let val = category === undefined ? stats[prop] : stats[prop][category];
-        statsArr.push({
-          'key': prop,
-          'value': val
-        });
-      }
-    }
-    statsArr.sort((a, b) => {
-      return b.value - a.value;
-    });
-
-    // let statsSortedKeys = statsArr.slice(0, 10).map( el => el.key);
-    let statsSortedKeys = statsArr.map( el => el.key);
-    let statsSorted = {};
-    statsSortedKeys.forEach( prop => {
-      let val = category === undefined ? stats[prop] : stats[prop][category];
-      statsSorted[prop] = val;
-    });
-    return statsSorted;
-  }
-
   updateGenderCount(stats, user) {
     stats[user.gender]++;
+    return stats;
+  }
+
+  updateGenderCount2(stats, user) {
+    stats[user.gender].value++;
     return stats;
   }
 
@@ -117,19 +104,8 @@ export default class Form extends React.Component {
     return stats;
   }
 
-  getAge(dateString) {
-    let today = new Date();
-    let birthDate = new Date(dateString);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    let m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
-  }
-
   updateAgeCount(stats, user) {
-    const age = this.getAge(user.dob);
+    const age = Util.getAge(user.dob);
     if (age <= 20) {
       stats["0-20"]++;
     } else if (age <= 40) {
@@ -147,52 +123,70 @@ export default class Form extends React.Component {
     return stats;
   }
 
+  formatStacked(sorted, key) {
+    let formatted = [];
+    for (let prop in sorted) {
+      if (sorted.hasOwnProperty(prop)) {
+        let entry = {
+          name: prop,
+          female: key[prop].female,
+          male: key[prop].male,
+        };
+        formatted.push(entry);
+      }
+    }
+    return formatted.slice(0, 10);
+  }
+
   parseData(users) {
-    let stateStats = this.parseState(users);
-    let genderStats = {female: 0, male: 0};
+    let genderStats    = {female: 0, male: 0};
+    let genderStats2    = {
+      female: {name: "female", value: 0},
+      male: {name: "male", value: 0}
+    };
     let firstNameStats = {"A-M": 0, "N-Z": 0};
-    let lastNameStats = {"A-M": 0, "N-Z": 0};
-    let ageStats = {"0-20": 0, "21-40": 0, "41-60": 0, "61-80": 0, "81-100": 0, "100+": 0};
+    let lastNameStats  = {"A-M": 0, "N-Z": 0};
+    let ageStats       = {"0-20": 0, "21-40": 0, "41-60": 0, "61-80": 0, "81-100": 0, "100+": 0};
 
     users.map( user => {
-      genderStats = this.updateGenderCount(genderStats, user);
-      // genderStats[user.gender]++;
+      genderStats    = this.updateGenderCount(genderStats, user);
+      genderStats2   = this.updateGenderCount2(genderStats2, user);
       firstNameStats = this.updateInitialsCount(firstNameStats, user, "first");
-      // if (user.name.first[0].toLowerCase() < "n") {
-      //   firstNameStats["A-M"]++;
-      // } else {
-      //   firstNameStats["N-Z"]++;
-      // }
-      lastNameStats = this.updateInitialsCount(lastNameStats, user, "last");
-      // if (user.name.last[0].toLowerCase() < "n") {
-      //   lastNameStats["A-M"]++;
-      // } else {
-      //   lastNameStats["N-Z"]++;
-      // }
-      ageStats = this.updateAgeCount(ageStats, user);
+      lastNameStats  = this.updateInitialsCount(lastNameStats, user, "last");
+      ageStats       = this.updateAgeCount(ageStats, user);
     });
+    const stateStats = this.parseState(users);
 
-    ageStats = this.sortData(ageStats);
-    const stateStatsTotals = this.sortData(stateStats, "total");
-    const stateStatsMales = this.sortData(stateStats, "male");
-    const stateStatsFemales = this.sortData(stateStats, "female");
+    const stateStatsTotals  = Util.sortData(stateStats, "total");
+    const stateStatsMales   = Util.sortData(stateStats, "male");
+    const stateStatsFemales = Util.sortData(stateStats, "female");
+    const stateStatsTotalsWithGender = this.formatStacked(stateStatsTotals, stateStats);
+
     return {
       genderStats,
+      genderStats2,
       firstNameStats,
       lastNameStats,
       stateStatsTotals,
       stateStatsMales,
       stateStatsFemales,
-      ageStats
+      ageStats,
+      stateStatsTotalsWithGender
     };
   }
 
   charts() {
     return (
       <section className="charts">
+        <BarChartStacked
+          barChartData={this.state.data.stateStatsTotalsWithGender}
+          title="Users by State and Gender"/>
+        <PieChartUsers
+          pieChartData={this.state.data.genderStats2}
+          title="Users by Gender"/>
         <BarChartUsers
-          barChartData={this.state.data.ageStats}
-          title="Users by Age"/>
+          barChartData={this.state.data.stateStatsTotals}
+          title="Users by State"/>
         <BarChartUsers
           barChartData={this.state.data.genderStats}
           title="Users by Gender"/>
@@ -203,15 +197,14 @@ export default class Form extends React.Component {
           barChartData={this.state.data.lastNameStats}
           title="Users by Last Name Initial"/>
         <BarChartUsers
-          barChartData={this.state.data.stateStatsTotals}
-          title="Users by State"/>
-        <BarChartUsers
           barChartData={this.state.data.stateStatsMales}
           title="Male Users by State"/>
         <BarChartUsers
           barChartData={this.state.data.stateStatsFemales}
           title="Female Users by State"/>
-
+        <BarChartUsers
+          barChartData={this.state.data.ageStats}
+          title="Users by Age"/>
       </section>
     );
   }
@@ -222,7 +215,7 @@ export default class Form extends React.Component {
       <main>
         <h1>Welcome to User Statistics</h1>
         <form className="user-input">
-          <div className="input-fields group">
+          <div className="flexcontainer">
             <div className="input-item">
               <label>
                 Paste data:
@@ -246,11 +239,18 @@ export default class Form extends React.Component {
               </label>
             </div>
           </div>
-          <input
-            className="submit"
-            type="submit"
-            onClick={this.handleSubmit}
-          />
+          <div className="flexcontainer">
+            <button
+              className="button submit"
+              onClick={this.handleSubmit}>
+              Get Charts
+            </button>
+            <button
+              className="button cancel"
+              onClick={this.handleCancel}
+              >Cancel
+            </button>
+          </div>
         </form>
         <div className="charts">
           { this.state.data ? this.charts() : null }

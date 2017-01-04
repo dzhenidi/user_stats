@@ -7,7 +7,7 @@ export const toPercent = (decimal, fixed=0) => {
 
 export const getPercent = (total, value) => {
   const decimal = total > 0 ? value / total : 0;
-  return toPercent(decimal, 2);
+  return toPercent(decimal, 1);
 };
 
 export const getPercentWhole = (total, value) => {
@@ -25,6 +25,45 @@ export const getUserCount = data => {
   }
   return accum;
 };
+
+export const getAge = (dateString) => {
+  let today = new Date();
+  let birthDate = new Date(dateString);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  let m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age;
+};
+
+// input: arg1: {state1: {total: 5, female: 3, male:2}, state2: {...}, ...},
+//        arg2: "total", "female", or "male"
+// output: in desc order by prop value
+  export const sortData = (stats, category) => {
+    let statsArr = [];
+    for (let prop in stats) {
+      if (stats.hasOwnProperty(prop)) {
+        let val = category === undefined ? stats[prop] : stats[prop][category];
+        statsArr.push({
+          'key': prop,
+          'value': val
+        });
+      }
+    }
+
+    statsArr.sort((a, b) => {
+      return b.value - a.value;
+    });
+
+    let statsSortedKeys = statsArr.map( el => el.key);
+    let statsSorted = {};
+    statsSortedKeys.forEach( prop => {
+      let val = category === undefined ? stats[prop] : stats[prop][category];
+      statsSorted[prop] = val;
+    });
+    return statsSorted;
+  };
 
 
 // turn into decimal:
