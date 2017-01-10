@@ -41,15 +41,6 @@ export default class Form extends React.Component {
     });
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
-
-  }
-
-  handleCancel(e) {
-    e.preventDefault();
-
-  }
 
   parseState(users) {
     let stateStats = {};
@@ -91,7 +82,7 @@ export default class Form extends React.Component {
     return stats;
   }
 
-  updateGenderCount2(stats, user) {
+  updateGenderCountPie(stats, user) {
     stats[user.gender].value++;
     return stats;
   }
@@ -168,22 +159,19 @@ export default class Form extends React.Component {
 
   parseData(users) {
     let numUsers;
-    let genderStats    = {female: 0, male: 0};
-    let genderStatsPie    = {
+    let genderStats = {female: 0, male: 0};
+    let genderStatsPie = {
       female: {name: "female", value: 0},
       male: {name: "male", value: 0}
     };
-    let firstNameStats = {"A-M": 0, "N-Z": 0};
     let firstNameStatsPie = {
       "A-M": {name: "A-M", value: 0},
       "N-Z": {name: "N-Z", value: 0}
     };
-    let lastNameStats  = {"A-M": 0, "N-Z": 0};
     let lastNameStatsPie = {
       "A-M": {name: "A-M", value: 0},
       "N-Z": {name: "N-Z", value: 0}
     };
-    let ageStats       = {"0-20": 0, "21-40": 0, "41-60": 0, "61-80": 0, "81-100": 0, "100+": 0};
     let ageStatsPie = {
       "0-20":   {name: "0-20",  value: 0},
       "21-40":  {name: "21-40", value: 0},
@@ -192,19 +180,20 @@ export default class Form extends React.Component {
       "81-100": {name: "81-100", value: 0},
       "100+":   {name: "100+",  value: 0},
     };
+
     users.map( user => {
       genderStats    = this.updateGenderCount(genderStats, user);
-      genderStatsPie   = this.updateGenderCount2(genderStatsPie, user);
-      firstNameStats = this.updateInitialsCountPie(firstNameStatsPie, user, "first");
-      lastNameStats  = this.updateInitialsCountPie(lastNameStatsPie, user, "last");
-      ageStats       = this.updateAgeCountPie(ageStatsPie, user);
+      genderStatsPie = this.updateGenderCountPie(genderStatsPie, user);
+      firstNameStatsPie = this.updateInitialsCountPie(firstNameStatsPie, user, "first");
+      lastNameStatsPie  = this.updateInitialsCountPie(lastNameStatsPie, user, "last");
+      ageStatsPie    = this.updateAgeCountPie(ageStatsPie, user);
       numUsers++;
     });
     const stateStats = this.parseState(users);
 
     const stateStatsTotals  = Util.sortData(stateStats, "total");
     const stateStatsMales   = Util.sortData(stateStats, "male");
-    const stateStatsFemales = Util.sortData2(stateStats, "female");
+    const stateStatsFemales = Util.sortDataWithName(stateStats, "female");
     const stateStatsTotalsWithGender = this.formatStacked(stateStatsTotals, stateStats);
     return {
       genderStats,
@@ -251,24 +240,12 @@ export default class Form extends React.Component {
           <BarChartStacked
             barChartData={this.state.data.stateStatsTotalsWithGender}
             title="Users by State and Gender"/>
-          <BarChartUsers
-            barChartData={this.state.data.genderStats}
-            title="Users by Gender"/>
         </section>
       </div>
     );
   }
 
-  // const dataBarPoly = {
-  //   "state1": {name: "state1", female: 10, male: 12, total: 22},
-  //   "state2": {name: "state2", female: 15, male: 17, total: 32},
-  //   "state3": {name: "state3", female: 15, male: 15, total: 30},
-  // };
-  //
-  //
-  // const dataBarMono = {
-  //   "state1": {name: "state1", female: 10, male: 12, total: 22},
-  // }
+
 
   render(){
     return(
@@ -283,7 +260,6 @@ export default class Form extends React.Component {
                 <input
                   type="text"
                   className="paste"
-                  value={this.state.userData}
                   onChange={this.handleInput}
                   />
               </label>
@@ -309,16 +285,3 @@ export default class Form extends React.Component {
     );
   }
 }
-// BUTTONS
-// <div className="flexcontainer">
-//   <button
-//     className="button submit"
-//     onClick={this.handleSubmit}>
-//     Get Charts
-//   </button>
-//   <button
-//     className="button cancel"
-//     onClick={this.handleCancel}
-//     >Cancel
-//   </button>
-// </div>

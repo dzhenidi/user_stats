@@ -19,9 +19,15 @@ export const tooltipContent = (total, o) => {
   );
 };
 
+export const wrapperStyle = {
+  padding: '10px',
+  backgroundColor: '#fff',
+  border: '2px solid #d3d3d3',
+  borderRadius: '5px'
+};
+
 export const tooltipContent2 = (total, o) => {
   const { payload, label } = o;
-  // const payloadPercent = Util.toPercent(payload[0].percent);
 
   return (
     <div className="customized-tooltip-content">

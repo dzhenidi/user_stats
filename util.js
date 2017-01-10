@@ -1,4 +1,3 @@
-export const FILLS_GRADIENT_BLUE = ["#00264d", "#003366", "#004080", "#004d99", "#0059b3", "#0066cc", "#0073e6", "#0080ff", "#1a8cff", "#3399ff"];
 export const FILLS = ["#92c5eb", "#bf739c", "#f4e053", "#3ea3cb", "#8b6baf", "#f598a4", "#b7da9b", "#63c29d", "#eda44c", "#f27173"];
 
 export const toPercent = (decimal, fixed=0) => {
@@ -27,7 +26,6 @@ export const getUserCount = data => {
 };
 
 // reduces data to sum of values { A: {name: "A", value: 36}, B: {name: "B", value: 14} }
-
 export const getUserCount2 = (data, category) => {
   let accum = 0;
   for (let prop in data) {
@@ -37,7 +35,7 @@ export const getUserCount2 = (data, category) => {
     }
   }
   return accum;
-}
+};
 
 export const getAge = (dateString) => {
   let today = new Date();
@@ -77,8 +75,9 @@ export const getAge = (dateString) => {
     });
     return statsSorted;
   };
+
   //output {state: {name: state, female: 20}}
-  export const sortData2 = (stats, category) => {
+  export const sortDataWithName = (stats, category) => {
     let statsArr = [];
     for (let prop in stats) {
       if (stats.hasOwnProperty(prop)) {
@@ -97,8 +96,6 @@ export const getAge = (dateString) => {
     let statsSortedKeys = statsArr.slice(0, 10).map( el => el.key);
     let statsSorted = {};
     statsSortedKeys.forEach( prop => {
-      // let val = category === undefined ? stats[prop] : stats[prop][category];
-      // statsSorted[prop] = val;
       statsSorted[prop] = {
         name: prop,
         [category]: stats[prop][category]
@@ -116,10 +113,3 @@ export const getAge = (dateString) => {
     }
     return arr;
   };
-
-
-// turn into decimal:
-// const getPercent = (value, total) => {
-//   const decimal = total > 0 ? value / total : 0;
-//   return decimal;
-// };

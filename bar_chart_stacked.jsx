@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Util from './util';
-import * as CustomChartProps from './custom_chart_props';
+import { wrapperStyle } from './custom_chart_props';
 import {
   BarChart,
   Bar,
@@ -12,8 +12,7 @@ import {
 } from 'recharts';
 
 
-export const BarChartStacked = ({barChartData, title}) => {
-  return (
+export const BarChartStacked = ({barChartData, title}) => (
     <article className="chart">
       <h2>{title}</h2>
       <BarChart width={600} height={400} data={barChartData}
@@ -21,11 +20,10 @@ export const BarChartStacked = ({barChartData, title}) => {
        <XAxis dataKey="name"/>
        <YAxis />
        <CartesianGrid strokeDasharray="3 3"/>
-       <Tooltip/>
+       <Tooltip />
        <Legend />
        <Bar dataKey="male" stackId="a" fill={Util.FILLS[0]} />
        <Bar dataKey="female" stackId="a" fill={Util.FILLS[1]} />
       </BarChart>
     </article>
-  );
-};
+);

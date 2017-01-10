@@ -15,14 +15,6 @@
 }
 
 
-/*
-.group {
- content: "";
- display: block;
- clear: both;
- overflow: auto;
-}*/
-
 body {
  background-color: #cccccc;
  font-family: sans-serif;
@@ -66,41 +58,38 @@ form, article, section.charts.pie {
   border-radius: 5px;
 }
 
+.flexcontainer {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  -webkit-align-content: flex-end;
+  align-content: flex-end;
+}
+
 section.charts.bar article {
   min-width: 600px;
-
 }
 
-/*article.chart.pie {
-  display: inline-block;
-  width: auto;
-}*/
-
-form.user-input {
+.input-item {
+  width: 300px;
+  padding: 5px 10px;
 }
-
-/*.input-fields .input-item {
-  float: left;
-}*/
-/*section.charts.pie.flexcontainer {
-  width: 60%;
-  padding: 20px;
-  margin: 20px auto;
-  background: white;
-}*/
 
 .input-item input {
   margin-left: 5px;
-}
-.input-item {
-  padding: 5px 10px;
 }
 
 input.paste {
   border: 1px solid #D3D3D3;
   border-radius: 5px;
   display: inline-block;
-  width: 150px;
 }
 
 form label {
@@ -118,7 +107,7 @@ input.upload {
   vertical-align: middle;
 }
 
-button.button {
+/*button.button {
   display: block;
   margin: 10px;
   padding: 8px 10px;
@@ -133,11 +122,7 @@ button.button {
   background-image: -moz-linear-gradient(#8add6d, #60b044);
   background-image: -webkit-linear-gradient(#8add6d, #60b044);
   background-image: linear-gradient(#8add6d, #60b044);
-}
-
-button.button.cancel {
-
-}
+}*/
 
 section.charts {
   color: #111;
@@ -147,33 +132,7 @@ article.chart {
   padding-bottom: 20px;
 }
 
-
 article.chart.pie {
-    width: auto;
-    border: none;
-}
-
-.flexcontainer {
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: row;
-  flex-direction: row;
-  -webkit-align-items: center;
-  align-items: center;
-  -webkit-justify-content: center;
-  justify-content: center;
-  -webkit-flex-flow: row wrap;
-  flex-flow: row wrap;
-  /* tweak the where items line up on the row */
-  /* valid values are: flex-start, flex-end, space-between, space-around, stretch */
-  -webkit-align-content: flex-end;
-  align-content: flex-end;
-}
-
-/*.recharts-legend-wrapper {
-    bottom: -5px !important;
-}*/
-
-.pie-chart-container {
-  /*display: inline-block;*/
+  width: auto;
+  border: none;
 }

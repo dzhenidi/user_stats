@@ -11,11 +11,9 @@ import {
 
 
 export const PieChartUsers = ({pieChartData, title}) => {
-
-  //data needs to be an array, convert to percents and array
-  // const data = [{name: "female", value: 400}, {name: "male", value: 300}];
   const data = Util.toArray(pieChartData);
   const total = Util.getUserCount2(pieChartData);
+
   return (
     <article className="chart pie">
       <h2>{title}</h2>
@@ -39,6 +37,3 @@ export const PieChartUsers = ({pieChartData, title}) => {
     </article>
   );
 };
-
-// startAngle={180}
-// endAngle={0}

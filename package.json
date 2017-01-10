@@ -4,7 +4,7 @@
   "description": "",
   "main": "entry.js",
   "scripts": {
-    "webpack": "webpack"
+   "postinstall": "./node_modules/.bin/webpack"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +19,9 @@
     "react-dom": "^15.4.1",
     "recharts": "^0.19.1",
     "webpack": "^1.14.0"
+  },
+  "engines": {
+  "node": "6.2.1",
+  "npm": "3.9.3"
   }
 }
