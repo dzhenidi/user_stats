@@ -4,7 +4,8 @@
   "description": "",
   "main": "entry.js",
   "scripts": {
-   "postinstall": "./node_modules/.bin/webpack"
+    "webpack": "webpack --watch",
+   "heroku-postbuild": "webpack --config webpack.config.prod.js"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,6 @@
   },
   "engines": {
   "node": "6.2.1",
-  "npm": "3.9.3"
+  "npm": "3.9.x"
   }
 }
