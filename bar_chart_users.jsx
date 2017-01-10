@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Util from './util';
-import * as CustomChartProps from './custom_chart_props';
+import { tooltipContent } from './custom_chart_props';
 import {
   BarChart,
   Bar,
@@ -20,16 +20,16 @@ export const BarChartUsers = ({barChartData, title}) => {
       key={i}
       dataKey={dataKey}
       fill={Util.FILLS[i]}
-      maxBarSize={100}
+      maxBarSize={30}
     />
   ));
-  const legendStyle = {
-    position: "absolute",
-    width: "600px",
-    height: "auto",
-    left: "20px",
-    bottom: "-5px"
-  };
+  // const legendStyle = {
+  //   position: "absolute",
+  //   width: "600px",
+  //   height: "auto",
+  //   left: "20px",
+  //   bottom: "-5px"
+  // };
   return (
     <article className="chart">
       <h2>{title}</h2>
@@ -37,18 +37,25 @@ export const BarChartUsers = ({barChartData, title}) => {
         width={600}
         height={300}
         data={[barChartData]}
-        margin={{top: 5, right: 30, left: 20, bottom: 5}}>
-        <XAxis />
+        margin={{top: 5, right: 20, left: 20, bottom: 5}}
+        barGap={5}
+        >
+        <XAxis tickLine={false} tick={false}/>
         <YAxis
           tickFormatter={Util.getPercent.bind(null, total)}
-          interval="preserveStartEnd"
-          allowDecimals={true}/>
+          domain={[0, 'dataMax + 1']}
+          />
         <CartesianGrid strokeDasharray="3 3"/>
         <Tooltip
-          content={CustomChartProps.tooltipContent.bind(null, total)}/>
-          {bars}
+          content={tooltipContent.bind(null, total)}
+          wrapperStyle={{padding: '10px', backgroundColor: '#fff', border: '2px solid #d3d3d3', borderRadius: '5px'}}
+          />
+        {bars}
         <Legend
-          width={600}
+          layout="horizontal"
+          align="left"
+          width={550}
+          wrapperStyle={{left: 50, bottom: -4}}
           />
       </BarChart>
     </article>

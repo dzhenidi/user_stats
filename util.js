@@ -26,6 +26,19 @@ export const getUserCount = data => {
   return accum;
 };
 
+// reduces data to sum of values { A: {name: "A", value: 36}, B: {name: "B", value: 14} }
+
+export const getUserCount2 = (data, category) => {
+  let accum = 0;
+  for (let prop in data) {
+    if (data.hasOwnProperty(prop)) {
+      let val = category === undefined ? data[prop].value : data[prop][category];
+      accum += val;
+    }
+  }
+  return accum;
+}
+
 export const getAge = (dateString) => {
   let today = new Date();
   let birthDate = new Date(dateString);
@@ -63,6 +76,45 @@ export const getAge = (dateString) => {
       statsSorted[prop] = val;
     });
     return statsSorted;
+  };
+  //output {state: {name: state, female: 20}}
+  export const sortData2 = (stats, category) => {
+    let statsArr = [];
+    for (let prop in stats) {
+      if (stats.hasOwnProperty(prop)) {
+        let val = category === undefined ? stats[prop] : stats[prop][category];
+        statsArr.push({
+          'key': prop,
+          'value': val
+        });
+      }
+    }
+
+    statsArr.sort((a, b) => {
+      return b.value - a.value;
+    });
+
+    let statsSortedKeys = statsArr.slice(0, 10).map( el => el.key);
+    let statsSorted = {};
+    statsSortedKeys.forEach( prop => {
+      // let val = category === undefined ? stats[prop] : stats[prop][category];
+      // statsSorted[prop] = val;
+      statsSorted[prop] = {
+        name: prop,
+        [category]: stats[prop][category]
+      };
+    });
+    return statsSorted;
+  };
+
+  export const toArray = (o) => {
+    let arr = [];
+    for (let prop in o) {
+      if (o.hasOwnProperty(prop)) {
+        arr.push(o[prop]);
+      }
+    }
+    return arr;
   };
 
 

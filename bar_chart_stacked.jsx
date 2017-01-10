@@ -11,6 +11,7 @@ import {
   Legend
 } from 'recharts';
 
+
 export const BarChartStacked = ({barChartData, title}) => {
   return (
     <article className="chart">
@@ -18,7 +19,7 @@ export const BarChartStacked = ({barChartData, title}) => {
       <BarChart width={600} height={400} data={barChartData}
         margin={{top: 20, right: 30, left: 20, bottom: 5}}>
        <XAxis dataKey="name"/>
-       <YAxis label="users"/>
+       <YAxis />
        <CartesianGrid strokeDasharray="3 3"/>
        <Tooltip/>
        <Legend />

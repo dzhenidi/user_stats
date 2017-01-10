@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Util from './util';
-import * as CustomChartProps from './custom_chart_props';
+import { tooltipContent2, renderCustomizedLabel } from './custom_chart_props';
 import {
   PieChart,
   Pie,
@@ -9,23 +9,36 @@ import {
   Tooltip
 } from 'recharts';
 
+
 export const PieChartUsers = ({pieChartData, title}) => {
+
   //data needs to be an array, convert to percents and array
-  const data = [{name: "female", value: 400}, {name: "male", value: 300}];
+  // const data = [{name: "female", value: 400}, {name: "male", value: 300}];
+  const data = Util.toArray(pieChartData);
+  const total = Util.getUserCount2(pieChartData);
   return (
-    <article className="chart">
+    <article className="chart pie">
       <h2>{title}</h2>
-      <PieChart width={250} height={250}>
-        <Pie data={pieChartData} startAngle={180} endAngle={0} cx="50%" cy="50%" outerRadius={80} label>
-          {
-            data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={Util.FILLS[index]}/>
-            ))
-          }
-        </Pie>
-        <Tooltip/>
-        <Legend />
-      </PieChart>
+      <div className="pie-chart-container">
+        <PieChart width={250} height={200}>
+          <Pie
+            data={data}
+            cy={"50%"}
+            label={renderCustomizedLabel}
+            labelLine={false}>
+            {
+              data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={Util.FILLS[index]}/>
+              ))
+            }
+          </Pie>
+          <Tooltip content={tooltipContent2.bind(null, total)}/>
+          <Legend vertical-align="bottom" height={10}/>
+        </PieChart>
+      </div>
     </article>
   );
 };
+
+// startAngle={180}
+// endAngle={0}

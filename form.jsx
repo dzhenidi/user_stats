@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChartUsers } from './bar_chart_users';
+import { BarChartMonochrome } from './bar_chart_monochrome';
 import { BarChartStacked } from './bar_chart_stacked';
 import { PieChartUsers } from './pie_chart_users';
 import * as Util from './util';
@@ -104,6 +105,15 @@ export default class Form extends React.Component {
     return stats;
   }
 
+  updateInitialsCountPie(stats, user, prop) {
+    if (user.name[prop][0].toLowerCase() < "n") {
+      stats["A-M"].value++;
+    } else {
+      stats["N-Z"].value++;
+    }
+    return stats;
+  }
+
   updateAgeCount(stats, user) {
     const age = Util.getAge(user.dob);
     if (age <= 20) {
@@ -118,6 +128,24 @@ export default class Form extends React.Component {
       stats["81-100"]++;
     } else {
       stats["100+"]++;
+    }
+
+    return stats;
+  }
+  updateAgeCountPie(stats, user) {
+    const age = Util.getAge(user.dob);
+    if (age <= 20) {
+      stats["0-20"].value++;
+    } else if (age <= 40) {
+      stats["21-40"].value++;
+    } else if (age <= 60) {
+      stats["41-60"].value++;
+    } else if (age <= 80) {
+      stats["61-80"].value++;
+    } else if (age <= 100) {
+      stats["81-100"].value++;
+    } else {
+      stats["100+"].value++;
     }
 
     return stats;
@@ -139,82 +167,115 @@ export default class Form extends React.Component {
   }
 
   parseData(users) {
+    let numUsers;
     let genderStats    = {female: 0, male: 0};
-    let genderStats2    = {
+    let genderStatsPie    = {
       female: {name: "female", value: 0},
       male: {name: "male", value: 0}
     };
     let firstNameStats = {"A-M": 0, "N-Z": 0};
+    let firstNameStatsPie = {
+      "A-M": {name: "A-M", value: 0},
+      "N-Z": {name: "N-Z", value: 0}
+    };
     let lastNameStats  = {"A-M": 0, "N-Z": 0};
+    let lastNameStatsPie = {
+      "A-M": {name: "A-M", value: 0},
+      "N-Z": {name: "N-Z", value: 0}
+    };
     let ageStats       = {"0-20": 0, "21-40": 0, "41-60": 0, "61-80": 0, "81-100": 0, "100+": 0};
-
+    let ageStatsPie = {
+      "0-20":   {name: "0-20",  value: 0},
+      "21-40":  {name: "21-40", value: 0},
+      "41-60":  {name: "41-60", value: 0},
+      "61-80":  {name: "61-80", value: 0},
+      "81-100": {name: "81-100", value: 0},
+      "100+":   {name: "100+",  value: 0},
+    };
     users.map( user => {
       genderStats    = this.updateGenderCount(genderStats, user);
-      genderStats2   = this.updateGenderCount2(genderStats2, user);
-      firstNameStats = this.updateInitialsCount(firstNameStats, user, "first");
-      lastNameStats  = this.updateInitialsCount(lastNameStats, user, "last");
-      ageStats       = this.updateAgeCount(ageStats, user);
+      genderStatsPie   = this.updateGenderCount2(genderStatsPie, user);
+      firstNameStats = this.updateInitialsCountPie(firstNameStatsPie, user, "first");
+      lastNameStats  = this.updateInitialsCountPie(lastNameStatsPie, user, "last");
+      ageStats       = this.updateAgeCountPie(ageStatsPie, user);
+      numUsers++;
     });
     const stateStats = this.parseState(users);
 
     const stateStatsTotals  = Util.sortData(stateStats, "total");
     const stateStatsMales   = Util.sortData(stateStats, "male");
-    const stateStatsFemales = Util.sortData(stateStats, "female");
+    const stateStatsFemales = Util.sortData2(stateStats, "female");
     const stateStatsTotalsWithGender = this.formatStacked(stateStatsTotals, stateStats);
-
     return {
       genderStats,
-      genderStats2,
-      firstNameStats,
-      lastNameStats,
+      genderStatsPie,
+      firstNameStatsPie,
+      lastNameStatsPie,
       stateStatsTotals,
       stateStatsMales,
       stateStatsFemales,
-      ageStats,
-      stateStatsTotalsWithGender
+      ageStatsPie,
+      stateStatsTotalsWithGender,
+      numUsers
     };
   }
 
   charts() {
     return (
-      <section className="charts">
-        <BarChartStacked
-          barChartData={this.state.data.stateStatsTotalsWithGender}
-          title="Users by State and Gender"/>
-        <PieChartUsers
-          pieChartData={this.state.data.genderStats2}
-          title="Users by Gender"/>
-        <BarChartUsers
-          barChartData={this.state.data.stateStatsTotals}
-          title="Users by State"/>
-        <BarChartUsers
-          barChartData={this.state.data.genderStats}
-          title="Users by Gender"/>
-        <BarChartUsers
-          barChartData={this.state.data.firstNameStats}
-          title="Users by First Name Initial"/>
-        <BarChartUsers
-          barChartData={this.state.data.lastNameStats}
-          title="Users by Last Name Initial"/>
-        <BarChartUsers
-          barChartData={this.state.data.stateStatsMales}
-          title="Male Users by State"/>
-        <BarChartUsers
-          barChartData={this.state.data.stateStatsFemales}
-          title="Female Users by State"/>
-        <BarChartUsers
-          barChartData={this.state.data.ageStats}
-          title="Users by Age"/>
-      </section>
+      <div className="charts-container">
+        <section className="charts pie flexcontainer">
+          <PieChartUsers
+            pieChartData={this.state.data.genderStatsPie}
+            title="Users by Gender"/>
+          <PieChartUsers
+            pieChartData={this.state.data.ageStatsPie}
+            title="Users by Age"/>
+          <PieChartUsers
+            pieChartData={this.state.data.firstNameStatsPie}
+            title="Users by First Name Initial"/>
+          <PieChartUsers
+            pieChartData={this.state.data.lastNameStatsPie}
+            title="Users by Last Name Initial"/>
+        </section>
+        <section className="charts bar">
+          <BarChartUsers
+            barChartData={this.state.data.stateStatsTotals}
+            title="Users by State"/>
+          <BarChartUsers
+            barChartData={this.state.data.stateStatsMales}
+            title="Male Users by State"/>
+          <BarChartMonochrome
+            barChartData={this.state.data.stateStatsFemales}
+            title="Female Users by State"
+            numUsers={this.state.data.genderStats.female}/>
+          <BarChartStacked
+            barChartData={this.state.data.stateStatsTotalsWithGender}
+            title="Users by State and Gender"/>
+          <BarChartUsers
+            barChartData={this.state.data.genderStats}
+            title="Users by Gender"/>
+        </section>
+      </div>
     );
   }
 
+  // const dataBarPoly = {
+  //   "state1": {name: "state1", female: 10, male: 12, total: 22},
+  //   "state2": {name: "state2", female: 15, male: 17, total: 32},
+  //   "state3": {name: "state3", female: 15, male: 15, total: 30},
+  // };
+  //
+  //
+  // const dataBarMono = {
+  //   "state1": {name: "state1", female: 10, male: 12, total: 22},
+  // }
 
   render(){
     return(
       <main>
-        <h1>Welcome to User Statistics</h1>
+        <h1>User Statistics</h1>
         <form className="user-input">
+          <h2>Paste or upload your JSON data to generate charts.</h2>
           <div className="flexcontainer">
             <div className="input-item">
               <label>
@@ -239,18 +300,7 @@ export default class Form extends React.Component {
               </label>
             </div>
           </div>
-          <div className="flexcontainer">
-            <button
-              className="button submit"
-              onClick={this.handleSubmit}>
-              Get Charts
-            </button>
-            <button
-              className="button cancel"
-              onClick={this.handleCancel}
-              >Cancel
-            </button>
-          </div>
+
         </form>
         <div className="charts">
           { this.state.data ? this.charts() : null }
@@ -259,3 +309,16 @@ export default class Form extends React.Component {
     );
   }
 }
+// BUTTONS
+// <div className="flexcontainer">
+//   <button
+//     className="button submit"
+//     onClick={this.handleSubmit}>
+//     Get Charts
+//   </button>
+//   <button
+//     className="button cancel"
+//     onClick={this.handleCancel}
+//     >Cancel
+//   </button>
+// </div>

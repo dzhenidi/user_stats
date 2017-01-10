@@ -11,14 +11,17 @@
   text-align: inherit;
   box-sizing: inherit;
   text-decoration: inherit;
+  list-style: none;
 }
 
+
+/*
 .group {
  content: "";
  display: block;
  clear: both;
  overflow: auto;
-}
+}*/
 
 body {
  background-color: #cccccc;
@@ -43,9 +46,17 @@ h2 {
   padding: 10px 0;
   text-align: center;
   margin-bottom: 20px;
+  color: #000;
 }
 
-form, article {
+form h2 {
+    font-size: 16px;
+    padding: 10px 25px;
+    margin-bottom: 20px;
+    color: #cccccc;
+}
+
+form, article, section.charts.pie {
   background-color: #fff;
   color: black;
   border: 1px solid #D3D3D3;
@@ -55,15 +66,34 @@ form, article {
   border-radius: 5px;
 }
 
+section.charts.bar article {
+  min-width: 600px;
+
+}
+
+/*article.chart.pie {
+  display: inline-block;
+  width: auto;
+}*/
+
 form.user-input {
 }
 
 /*.input-fields .input-item {
   float: left;
 }*/
+/*section.charts.pie.flexcontainer {
+  width: 60%;
+  padding: 20px;
+  margin: 20px auto;
+  background: white;
+}*/
 
 .input-item input {
   margin-left: 5px;
+}
+.input-item {
+  padding: 5px 10px;
 }
 
 input.paste {
@@ -80,9 +110,7 @@ form label {
   margin: 10px;
 }
 
-input.paste {
 
-}
 input.upload {
   color: #808080;
   font-weight: 100;
@@ -119,7 +147,13 @@ article.chart {
   padding-bottom: 20px;
 }
 
-div.flexcontainer {
+
+article.chart.pie {
+    width: auto;
+    border: none;
+}
+
+.flexcontainer {
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
@@ -128,8 +162,18 @@ div.flexcontainer {
   align-items: center;
   -webkit-justify-content: center;
   justify-content: center;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  /* tweak the where items line up on the row */
+  /* valid values are: flex-start, flex-end, space-between, space-around, stretch */
+  -webkit-align-content: flex-end;
+  align-content: flex-end;
 }
 
-.recharts-legend-wrapper {
+/*.recharts-legend-wrapper {
     bottom: -5px !important;
+}*/
+
+.pie-chart-container {
+  /*display: inline-block;*/
 }
