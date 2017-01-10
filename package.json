@@ -5,6 +5,7 @@
   "main": "entry.js",
   "scripts": {
     "webpack": "webpack --watch",
+    "start": "node entry.jsx",
    "heroku-postbuild": "npm run build"
   },
   "keywords": [],
