@@ -5,8 +5,7 @@
   "main": "entry.js",
   "scripts": {
     "webpack": "webpack --watch",
-    "heroku-prebuild": "npm run build:clean",
-   "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "webpack --config webpack.config.prod.js"
   },
   "keywords": [],
   "author": "",

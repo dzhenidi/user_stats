@@ -1,0 +1,42 @@
+var webpack = require("webpack");
+
+module.exports = {
+  context: __dirname,
+  entry: "./entry.jsx",
+  output: {
+    path: "./",
+    filename: "bundle.js"
+  },
+  plugins:[
+    new webpack.DefinePlugin({
+      'process.env':{
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress:{
+        warnings: true
+      }
+    })
+  ],
+  module: {
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        loader: 'babel',
+        query: {
+          presets: ['react', 'es2015']
+        }
+      },
+      {
+        test: /\.css$/,
+        loader: "style-loader!css-loader"
+      }
+    ]
+  },
+  devtool: 'source-map',
+  resolve: {
+    extensions: ["", ".js", ".jsx"]
+  }
+};
