@@ -2,7 +2,7 @@
   "name": "user_stats",
   "version": "1.0.0",
   "description": "",
-  "main": "entry.js",
+  "main": "webpack.config.js",
   "scripts": {
     "webpack": "webpack --watch",
     "heroku-postbuild": "webpack --config webpack.config.prod.js"
